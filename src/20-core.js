@@ -129,7 +129,7 @@ controls.enableDamping = true; controls.dampingFactor = 0.11; controls.rotateSpe
 controls.minDistance = 26; controls.maxDistance = 190;
 controls.minPolarAngle = 0.42; controls.maxPolarAngle = 1.22;
 controls.screenSpacePanning = false;
-controls.autoRotateSpeed = 0.45;
+controls.autoRotateSpeed = 1.8;
 controls.target.copy(HOME);
 
 /* Farben: Hex ist sRGB, die Szene rechnet linear */

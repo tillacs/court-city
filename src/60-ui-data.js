@@ -268,13 +268,13 @@ async function initMcp(){
    ===================================================================== */
 function applyDay(){
   const day = state.day;
-  scene.background = day ? SKY_DAY : SKY_NIGHT; scene.fog.color.copy(day ? FOG_DAY : FOG_NIGHT); scene.fog.near = day ? 140 : 120; scene.fog.far = day ? 420 : 330;
-  hemi.color.copy(day ? col('#DDE8FF') : col('#6A74D8')); hemi.groundColor.copy(day ? col('#7A6A58') : col('#1C1030')); hemi.intensity = day ? 1.1 : 0.8;
-  moon.color.copy(day ? col('#FFF3E0') : col('#9FB0FF')); moon.intensity = day ? 1.6 : 0.65; moon.position.set(day ? 60 : -60, 90, day ? 40 : 30);
-  floods.forEach(l => l.intensity = day ? 0.15 : 1.15); alleyLights.forEach(l => l.intensity = day ? 0 : 0.9);
-  statics.emit.material.color.setScalar(day ? 0.3 : 1.5); signMesh && signMesh.material.color.setScalar(day ? 0.75 : 1); lanternMesh.material.color.setScalar(day ? 0.35 : 1);
+  scene.background = day ? SKY_DAY : SKY_NIGHT; scene.fog.color.copy(day ? FOG_DAY : FOG_NIGHT); scene.fog.near = day ? 160 : 120; scene.fog.far = day ? 460 : 330;
+  hemi.color.copy(day ? col('#DDE8FF') : col('#6A74D8')); hemi.groundColor.copy(day ? col('#7A6A58') : col('#1C1030')); hemi.intensity = day ? 1.6 : 0.8;
+  moon.color.copy(day ? col('#FFF3E0') : col('#9FB0FF')); moon.intensity = day ? 2.3 : 0.65; moon.position.set(day ? 70 : -60, day ? 110 : 90, day ? 50 : 30);
+  floods.forEach(l => l.intensity = day ? 0 : 1.15); alleyLights.forEach(l => l.intensity = day ? 0 : 0.9);
+  statics.emit.material.color.setScalar(day ? 0.3 : 1.5); statics.lit.material.color.setScalar(day ? 1.45 : 1); signMesh && signMesh.material.color.setScalar(day ? 0.75 : 1); lanternMesh.material.color.setScalar(day ? 0.35 : 1);
   glowMat.uniforms.opacity.value = day ? 0.12 : 1;
-  renderer.toneMappingExposure = day ? 1.0 : 1.25; bloom.strength = day ? 0.22 : 0.62; finalPass.uniforms.vig.value = day ? 0.35 : 0.55; finalPass.uniforms.warm.value = day ? 0.3 : 1;
+  renderer.toneMappingExposure = day ? 1.3 : 1.25; bloom.strength = day ? 0.15 : 0.62; bloom.threshold = day ? 0.9 : 0.62; finalPass.uniforms.vig.value = day ? 0.25 : 0.55; finalPass.uniforms.warm.value = day ? 0.2 : 1;
   stars.visible = !day;
   $('day-lbl').textContent = day ? 'Tag' : 'Nacht'; $('btn-day').setAttribute('aria-pressed', String(day));
 }

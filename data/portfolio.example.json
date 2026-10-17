@@ -1,0 +1,19 @@
+{
+  "_comment": "Kopiere diese Datei nach data/portfolio.json und trag deine Zahlen ein. Beträge in der angegebenen Währung, Renditen in Prozent. 'weight' ist optional und wird sonst aus 'value' berechnet.",
+  "currency": "EUR",
+  "asOf": "2026-10-17T12:00:00Z",
+  "total": 25000,
+  "today": 120,
+  "week": -310,
+  "xirr": 8.4,
+  "dividends": 310,
+  "holdings": [
+    { "name": "Welt-ETF", "value": 10000, "ret": 9.1 },
+    { "name": "Aktie A", "value": 5500, "ret": 14.2 },
+    { "name": "Schwellenländer-ETF", "value": 3750, "ret": 3.8 },
+    { "name": "Anleihen-ETF", "value": 3250, "ret": -1.2 },
+    { "name": "Tech-Aktie B", "value": 1500, "ret": 22.0 },
+    { "name": "Krypto", "value": 700, "ret": -8.5, "type": "crypto" },
+    { "name": "Cash", "value": 300, "ret": 0, "type": "cash" }
+  ]
+}

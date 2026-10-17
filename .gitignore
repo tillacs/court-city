@@ -1,0 +1,6 @@
+node_modules/
+.env
+.tokens.json
+data/portfolio.json
+data/settings.json
+.DS_Store

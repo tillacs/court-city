@@ -1,0 +1,14 @@
+{
+  "name": "court-city",
+  "version": "0.3.0",
+  "description": "Eine schwebende Stadt im Tokio-Stil mit zwei Basketball-Courts: einer spiegelt deine Arbeit, einer dein Depot.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.mjs && node scripts/build.mjs --standalone",
+    "dev": "npm run build && node scripts/serve.mjs",
+    "parqet": "node adapters/parqet-connect/server.mjs"
+  },
+  "engines": { "node": ">=18" },
+  "license": "MIT"
+}

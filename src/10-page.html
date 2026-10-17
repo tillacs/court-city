@@ -1,0 +1,210 @@
+<title>Court City</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Manrope:wght@400;600;800&family=Press+Start+2P&display=swap">
+<style>
+/* Layout: one full-bleed night-city diorama; thin glass HUD in the corners, a side sheet for details. */
+:root{
+  color-scheme: dark;
+  --bg:#06051A;
+  --panel:rgba(10,10,34,.82);
+  --panel-solid:#0D0D2C;
+  --line:#2A2A5E;
+  --fg:#F1EEFF;
+  --muted:#A9A6D2;
+  --dim:#75729F;
+  --you:#FF8A3D;
+  --you-ink:#1C0D03;
+  --money:#5EE6B0;
+  --money-ink:#04231A;
+  --neon:#FF5FA2;
+  --loss:#FF8B7A;
+  --f-display:'Press Start 2P','Courier New',monospace;
+  --f-body:Manrope,'Segoe UI',system-ui,sans-serif;
+  --f-jp:'DotGothic16','Hiragino Sans','Noto Sans JP',sans-serif;
+  --gx:max(16px, env(safe-area-inset-left, 0px));
+  --gxr:max(16px, env(safe-area-inset-right, 0px));
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;overflow:hidden}
+[hidden]{display:none!important}
+#app{position:relative;height:100%;min-height:520px;overflow:hidden;background:var(--bg)}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#scene.pointer{cursor:pointer}
+#scene:active{cursor:grabbing}
+.hud{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:12px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:5}
+.brand{top:14px;left:var(--gx);padding:12px 14px;display:flex;flex-direction:column;gap:7px;max-width:280px}
+.brand h1{margin:0;font-family:var(--f-display);font-size:17px;line-height:1.3;color:var(--you);letter-spacing:1px}
+.brand .jp{font-family:var(--f-jp);color:var(--neon);font-size:12px;letter-spacing:3px}
+.brand p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:11px;font-weight:800;padding:4px 8px;border-radius:6px;letter-spacing:.3px;display:inline-flex;align-items:center;gap:6px}
+.chip.you{background:#3A2410;color:#FFB070}
+.chip.ex{background:#14203A;color:#9FC4FF}
+.chip.live{background:#0F3329;color:#8EF0C8}
+.chip.warn{background:#3A1A1A;color:#FFB3A6}
+.chip .ldot{width:7px;height:7px;border-radius:50%;background:#FF4A4A;box-shadow:0 0 6px #FF4A4A;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+.score{top:14px;right:var(--gxr);padding:12px 16px;display:flex;flex-direction:column;gap:6px;min-width:214px}
+.eyebrow{font-family:var(--f-display);font-size:8px;letter-spacing:1px;color:var(--money)}
+.big{font-family:var(--f-display);font-size:19px;color:var(--fg);font-variant-numeric:tabular-nums;line-height:1.3}
+.kv{display:grid;grid-template-columns:auto auto;gap:3px 14px;font-size:12px;font-variant-numeric:tabular-nums}
+.kv span{color:var(--muted)}
+.kv b{text-align:right;color:var(--fg)}
+.kv b.up{color:var(--money)}
+.kv b.down{color:var(--loss)}
+.alloc{height:5px;border-radius:3px;display:flex;overflow:hidden;background:#1A1A44}
+.toolbar{left:var(--gx);bottom:66px;padding:7px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;max-width:calc(100% - 32px)}
+.btn{min-height:40px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:#13133A;color:var(--fg);font:800 12.5px var(--f-body);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{background:#1D1D52}
+.btn[aria-pressed="true"]{background:#2A2358;border-color:#4D46A0}
+.btn:focus-visible,.pin:focus-visible,.seg button:focus-visible,.close:focus-visible,.row:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--you);outline-offset:2px}
+.btn svg{width:15px;height:15px;flex-shrink:0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{min-height:40px;padding:0 12px;border:0;background:#13133A;color:var(--muted);font:800 12.5px var(--f-body);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--you);color:var(--you-ink)}
+.ticker{position:absolute;left:var(--gx);right:var(--gxr);bottom:max(12px, env(safe-area-inset-bottom, 0px));z-index:5;display:flex;align-items:center;overflow:hidden;background:var(--panel);border:1px solid var(--line);border-radius:10px;backdrop-filter:blur(10px)}
+.ticker .tag{flex-shrink:0;font-family:var(--f-display);font-size:8px;color:var(--you-ink);background:var(--you);padding:14px 11px;letter-spacing:.5px}
+.ticker .win{overflow:hidden;flex-grow:1;padding:0 14px}
+.track{display:flex;gap:44px;width:max-content;animation:scroll 48s linear infinite;font-size:12.5px;color:#CFCCF0;white-space:nowrap}
+.track b{color:var(--you);font-weight:800}
+.track i{font-style:normal;color:var(--money);font-weight:800}
+@keyframes scroll{to{transform:translateX(-50%)}}
+#pins{position:absolute;inset:0;pointer-events:none;z-index:4}
+.pin{position:absolute;left:0;top:0;pointer-events:auto;display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 12px;border-radius:9px;background:rgba(14,14,46,.92);border:1.5px solid var(--you);color:#FFE3CC;font:800 12.5px var(--f-body);white-space:nowrap;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.55);backdrop-filter:blur(6px)}
+.pin::after{content:"";position:absolute;left:50%;bottom:-6px;width:9px;height:9px;background:inherit;border-right:1.5px solid;border-bottom:1.5px solid;border-color:inherit;transform:translateX(-50%) rotate(45deg)}
+.pin .dot{width:8px;height:8px;border-radius:50%;background:var(--you);box-shadow:0 0 8px var(--you)}
+.pin.money{border-color:var(--money);color:#D6FBEA}
+.pin.money .dot{background:var(--money);box-shadow:0 0 8px var(--money)}
+.pin.lock{border-color:#4A4A8A;border-style:dashed;color:var(--muted)}
+.pin.lock .dot{background:#4A4A8A;box-shadow:none}
+.pin:hover{background:#1A1A58}
+#tip{position:absolute;z-index:8;pointer-events:none;background:var(--panel-solid);border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:12.5px;line-height:1.4;max-width:250px;box-shadow:0 8px 24px rgba(0,0,0,.55)}
+#tip .t{font-weight:800}
+#tip .jp{font-family:var(--f-jp);color:var(--neon);margin-left:6px}
+#tip .s{color:var(--muted)}
+#panel{position:absolute;top:14px;right:var(--gxr);bottom:66px;width:344px;max-width:calc(100% - 32px);z-index:7;background:var(--panel-solid);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.6)}
+#panel header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px 14px 8px}
+#panel h2{margin:0;font-family:var(--f-display);font-size:12px;line-height:1.6;color:var(--you);text-wrap:balance}
+#panel h2.money{color:var(--money)}
+#panel .sub{margin:5px 0 0;color:var(--muted);font-size:12.5px;line-height:1.5}
+.close{flex-shrink:0;width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:#13133A;color:var(--fg);cursor:pointer;display:grid;place-items:center}
+.close svg{width:15px;height:15px}
+#panel .body{padding:4px 14px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.card{border:1px solid var(--line);border-radius:11px;padding:11px 12px;display:flex;flex-direction:column;gap:7px;background:#11113A}
+.label{font-size:10px;font-weight:800;letter-spacing:.9px;color:var(--dim);text-transform:uppercase}
+.scoreline{display:flex;align-items:baseline;gap:12px;font-family:var(--f-display);font-variant-numeric:tabular-nums}
+.scoreline .a{font-size:22px;color:var(--you)}
+.scoreline .b{font-size:22px;color:#9DB2DD}
+.scoreline .s{font-size:11px;color:var(--dim)}
+.bar{height:7px;border-radius:4px;background:#1A1A44;overflow:hidden}
+.bar > div{height:100%;border-radius:4px;background:var(--you)}
+.legend{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:12.5px;line-height:1.4;margin:0}
+.legend dt{color:var(--you);font-weight:800}
+.legend.money dt{color:var(--money)}
+.legend dd{margin:0;color:#CFCCF0}
+.rows{display:flex;flex-direction:column;gap:3px}
+.row{display:grid;grid-template-columns:20px minmax(0,1fr) 62px 46px;gap:9px;align-items:center;font-size:12.5px;padding:7px 8px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--fg);text-align:left;cursor:pointer;font-family:var(--f-body);min-height:38px}
+.row:hover,.row[aria-pressed="true"]{background:#1A1A4E;border-color:var(--line)}
+.row .n{font-family:var(--f-display);font-size:8px}
+.row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .w{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.row .r{text-align:right;font-variant-numeric:tabular-nums;font-weight:800}
+.row .r.up{color:var(--money)}.row .r.down{color:var(--loss)}
+.note{font-size:11.5px;color:var(--dim);line-height:1.5;margin:0}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:800;color:var(--dim);letter-spacing:.5px;text-transform:uppercase}
+.form label.wide{grid-column:1 / -1}
+.form input,.form select{min-height:38px;width:100%;min-width:0;box-sizing:border-box;border-radius:8px;border:1px solid var(--line);background:#0A0A28;color:var(--fg);font:600 13px var(--f-body);padding:0 10px}
+.form label{min-width:0}
+.form .save{grid-column:1 / -1;justify-content:center;background:var(--you);color:var(--you-ink);border-color:var(--you)}
+.form .save:hover{background:#FFA463}
+#loading{position:absolute;inset:0;z-index:20;display:grid;place-items:center;background:var(--bg);transition:opacity .9s}
+#loading div{display:flex;flex-direction:column;align-items:center;gap:14px}
+#loading b{font-family:var(--f-display);font-size:13px;color:var(--you)}
+#loading span{font-family:var(--f-jp);color:var(--neon);letter-spacing:4px}
+#loading.done{opacity:0;pointer-events:none}
+.toast{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:9;font-size:12.5px;color:#E6E3FF;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 14px;white-space:nowrap;transition:opacity .6s;max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis}
+@media (max-width: 1100px){ .toast{display:none} }
+@media (max-width: 760px){
+  .brand{padding:9px 11px;max-width:56%;gap:5px}
+  .brand h1{font-size:13px}
+  .brand p,.brand .jp{display:none}
+  .score{padding:9px 11px;min-width:0;gap:4px}
+  .score .kv,.score .alloc{display:none}
+  .big{font-size:14px}
+  .toolbar{bottom:60px;padding:5px;gap:5px}
+  .btn{padding:0 10px}
+  .btn .lbl{display:none}
+  .pin{font-size:11.5px;padding:0 10px;min-height:34px}
+  #panel{top:auto;left:var(--gx);right:var(--gxr);bottom:60px;width:auto;max-width:none;height:60%}
+}
+@media (prefers-reduced-motion: reduce){ .track,.chip .ldot{animation:none} }
+</style>
+
+<div id="app">
+  <canvas id="scene" role="img" aria-label="Schwebende Stadt im Tokio-Stil bei Nacht. In der Mitte, hell ausgeleuchtet, zwei Basketballplätze: links spielst du gegen ein Team, rechts spielt ein Team aus deinen Depotpositionen. Drumherum kleine Ramen-Läden, Izakayas mit roten Laternen, eine Hochbahn, ein Schrein mit Kirschbäumen und ein Riesenrad."></canvas>
+  <div id="pins">
+    <button class="pin" id="pin-court1" type="button"><span class="dot"></span><span id="pin1-label">Court 1 · Du</span></button>
+    <button class="pin money" id="pin-court2" type="button"><span class="dot"></span>Court 2 · Dein Geld</button>
+    <button class="pin lock" id="pin-coach" type="button"><span class="dot"></span>Coach · später</button>
+  </div>
+
+  <header class="hud brand">
+    <h1>COURT CITY</h1>
+    <span class="jp">コート・シティ</span>
+    <p>Eine Stadt, zwei Courts. Auf dem einen spielst du, auf dem anderen spielt dein Geld.</p>
+    <div class="chips"><span class="chip you" id="mode-chip">Modus: Praktikum</span><span class="chip ex" id="data-chip">Beispieldaten</span></div>
+  </header>
+
+  <aside class="hud score" aria-label="Spielstand Portfolio">
+    <span class="eyebrow" id="score-eyebrow">● DER SPIELSTAND</span>
+    <span class="big" id="hud-total">–</span>
+    <div class="kv">
+      <span>Heute</span><b id="hud-today">–</b>
+      <span>Woche</span><b id="hud-week">–</b>
+      <span>Saison (XIRR)</span><b id="hud-xirr">–</b>
+    </div>
+    <div class="alloc" id="hud-alloc" aria-hidden="true"></div>
+  </aside>
+
+  <nav class="hud toolbar" aria-label="Ansicht">
+    <button class="btn" id="btn-home" type="button" aria-label="Übersicht"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span class="lbl">Übersicht</span></button>
+    <button class="btn" id="btn-c1" type="button" aria-label="Court 1"><span class="lbl">Court 1</span><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--you)"></span></button>
+    <button class="btn" id="btn-c2" type="button" aria-label="Court 2"><span class="lbl">Court 2</span><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--money)"></span></button>
+    <button class="btn" id="btn-day" type="button" aria-pressed="false" aria-label="Tag oder Nacht"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="lbl" id="day-lbl">Nacht</span></button>
+    <button class="btn" id="btn-rot" type="button" aria-pressed="false" aria-label="Automatisch drehen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg><span class="lbl">Drehen</span></button>
+    <button class="btn" id="btn-snd" type="button" aria-pressed="false" aria-label="Sound"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg><span class="lbl" id="snd-lbl">Sound aus</span></button>
+    <div class="seg" role="group" aria-label="Modus Court 1">
+      <button type="button" data-mode="work" aria-pressed="true">Arbeit</button>
+      <button type="button" data-mode="study" aria-pressed="false">Studium</button>
+    </div>
+  </nav>
+
+  <section class="ticker" aria-label="Heute auf dem Court">
+    <span class="tag">HEUTE AUF DEM COURT</span>
+    <div class="win"><div class="track" id="track"></div></div>
+  </section>
+
+  <aside id="panel" hidden aria-labelledby="panel-title">
+    <header>
+      <div><h2 id="panel-title"></h2><p class="sub" id="panel-sub"></p></div>
+      <button class="close" id="panel-close" type="button" aria-label="Details schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </header>
+    <div class="body" id="panel-body"></div>
+  </aside>
+
+  <div id="tip" hidden></div>
+  <div class="toast" id="hint">Ziehen dreht · Scrollen zoomt · Alles mit Schild ist anklickbar</div>
+  <div id="loading"><div><b>STADT WIRD GEBAUT</b><span>コート・シティ</span></div></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
